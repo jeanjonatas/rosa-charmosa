@@ -7,11 +7,13 @@ import { CONTATO, whatsappLinkFor } from '~/data/vestidos';
     href={CONTATO.mapsUrl}
     target="_blank"
     rel="noopener"
+    data-track="maps"
+    data-track-source="fab"
     class="fab fab-sm fab-maps"
     style={{ '--fab-delay': '400ms' }}
     aria-label="Abrir rota no Google Maps"
   >
-    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
       <circle cx="12" cy="9" r="2.3" stroke="currentColor" stroke-width="1.6"/>
     </svg>
@@ -22,11 +24,13 @@ import { CONTATO, whatsappLinkFor } from '~/data/vestidos';
     href={CONTATO.instagramUrl}
     target="_blank"
     rel="noopener"
+    data-track="instagram"
+    data-track-source="fab"
     class="fab fab-sm fab-insta"
     style={{ '--fab-delay': '300ms' }}
     aria-label="Abrir Instagram @rosacharmosavestidos"
   >
-    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/>
       <circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/>
       <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
@@ -38,11 +42,13 @@ import { CONTATO, whatsappLinkFor } from '~/data/vestidos';
     href={whatsappLinkFor()}
     target="_blank"
     rel="noopener"
+    data-track="whatsapp"
+    data-track-source="fab"
     class="fab fab-main fab-whatsapp"
     style={{ '--fab-delay': '200ms' }}
     aria-label="Agendar pelo WhatsApp"
   >
-    <svg class="relative z-10 h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg class="relative z-10 h-6 w-6 shrink-0 sm:h-7 sm:w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.8-1.6-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3 4.8 4.2 1.8.8 2.5.9 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.3C8.3 21.5 10.1 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z"/>
     </svg>
     <span class="fab-main-label">Agendar</span>
@@ -53,20 +59,27 @@ import { CONTATO, whatsappLinkFor } from '~/data/vestidos';
 <style>
   .fab-stack {
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 50;
+    right: 0.85rem;
+    bottom: 0.85rem;
+    z-index: 40;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.6rem;
+    gap: 0.5rem;
     pointer-events: none;
   }
   @media (min-width: 640px) {
     .fab-stack {
       right: 1.5rem;
       bottom: 1.5rem;
-      gap: 0.75rem;
+      gap: 0.7rem;
+    }
+  }
+
+  /* On dress detail pages (<1024px), .sticky-cta already provides the bottom WhatsApp CTA */
+  @media (max-width: 1023px) {
+    :global(body:has(.sticky-cta)) .fab-stack {
+      display: none;
     }
   }
 
@@ -90,31 +103,59 @@ import { CONTATO, whatsappLinkFor } from '~/data/vestidos';
   }
   .fab:active { transform: scale(0.94); }
 
+  /* Compact single WhatsApp FAB on small screens, revealed gently after scrolling past hero CTA */
+  @media (max-width: 639px) {
+    .fab-sm {
+      display: none;
+    }
+    :global(body:not(.has-scrolled)) .fab-stack {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0);
+      pointer-events: none;
+    }
+    :global(body:not(.has-scrolled)) .fab-stack .fab {
+      pointer-events: none;
+    }
+    .fab-stack {
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+  }
+
   .fab-main {
-    height: 4rem;
-    min-width: 4rem;
-    padding: 0 1.3rem 0 1rem;
+    height: 3.35rem;
+    width: 3.35rem;
+    padding: 0;
     gap: 0.5rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: 0.01em;
+    font-weight: 500;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
   }
   .fab-main-label {
+    display: none;
     position: relative;
     z-index: 10;
     white-space: nowrap;
   }
-  /* On very small screens collapse the label so FAB doesn't dominate */
-  @media (max-width: 380px) {
-    .fab-main { padding: 0; min-width: 3.75rem; width: 3.75rem; }
-    .fab-main-label { display: none; }
-  }
-
   .fab-sm {
-    width: 3.25rem;
-    height: 3.25rem;
+    width: 2.65rem;
+    height: 2.65rem;
   }
 
+  @media (min-width: 640px) {
+    .fab-main {
+      height: 3.65rem;
+      width: auto;
+      min-width: 3.65rem;
+      padding: 0 1.2rem 0 0.95rem;
+    }
+    .fab-main-label {
+      display: inline;
+    }
+    .fab-sm {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
 
   .fab-whatsapp {
     background: linear-gradient(135deg, #25D366, #128C7E);
@@ -134,21 +175,21 @@ import { CONTATO, whatsappLinkFor } from '~/data/vestidos';
     position: absolute;
     inset: -4px;
     border-radius: 999px;
-    border: 2px solid color-mix(in oklab, #25D366 50%, transparent);
+    border: 2px solid color-mix(in oklab, #25D366 48%, transparent);
     opacity: 0;
     animation: fab-pulse 2.6s ease-out infinite;
     pointer-events: none;
   }
   @keyframes fab-pulse {
     0% { opacity: 0.7; transform: scale(1); }
-    100% { opacity: 0; transform: scale(1.4); }
+    100% { opacity: 0; transform: scale(1.38); }
   }
 
   .fab-insta {
     background: linear-gradient(135deg, #8A3D7A, #D4425E 55%, #F5A24C);
   }
   .fab-maps {
-    background: linear-gradient(135deg, var(--color-ink), var(--color-gold-deep));
+    background: linear-gradient(135deg, var(--color-burgundy-deep), var(--color-gold-deep));
   }
 
   .fab-tooltip {
@@ -161,7 +202,7 @@ import { CONTATO, whatsappLinkFor } from '~/data/vestidos';
     background: color-mix(in oklab, var(--color-ink) 92%, transparent);
     color: var(--color-cream);
     font-size: 0.7rem;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
     opacity: 0;
     pointer-events: none;
     white-space: nowrap;

@@ -1,0 +1,181 @@
+---
+export type DressTrackMeta = {
+  code: string;
+  name: string;
+  color: string;
+  modelagem?: string;
+};
+
+type Props = {
+  dress?: DressTrackMeta;
+};
+
+const { dress } = Astro.props;
+
+const metaPixelId = (import.meta.env.PUBLIC_META_PIXEL_ID ?? '').trim();
+const ga4Id = (import.meta.env.PUBLIC_GA4_ID ?? '').trim();
+const gtmId = (import.meta.env.PUBLIC_GTM_ID ?? '').trim();
+---
+
+{/* Initialize dataLayer early so GTM / analytics events never drop */}
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+</script>
+
+{/* Google Tag Manager (optional) */}
+{
+  gtmId && (
+    <script is:inline define:vars={{ gtmId }}>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l !== 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', gtmId);
+    </script>
+  )
+}
+
+{/* Google Analytics 4 / Google Ads gtag.js (optional) */}
+{
+  ga4Id && (
+    <>
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`} />
+      <script is:inline define:vars={{ ga4Id }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        window.gtag = window.gtag || gtag;
+        gtag('js', new Date());
+        gtag('config', ga4Id, { anonymize_ip: true });
+      </script>
+    </>
+  )
+}
+
+{/* Meta Pixel (Facebook / Instagram Ads — optional) */}
+{
+  metaPixelId && (
+    <script is:inline define:vars={{ metaPixelId }}>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', metaPixelId);
+      fbq('track', 'PageView');
+    </script>
+  )
+}
+
+{/* Delegated CTA conversion tracking + automatic ViewContent on dress detail pages */}
+<script is:inline define:vars={{ dress }}>
+  (function () {
+    function pushDL(event, payload) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({ event: event }, payload));
+    }
+
+    // Automatic ViewContent when opening a dress detail page
+    if (dress && dress.code) {
+      var viewPayload = {
+        content_type: 'product',
+        content_ids: [dress.code],
+        content_name: dress.name,
+        content_category: dress.color,
+        dress_code: dress.code,
+        dress_name: dress.name,
+        dress_color: dress.color,
+        modelagem: dress.modelagem || '',
+      };
+      pushDL('view_dress', viewPayload);
+      if (typeof window.fbq === 'function') {
+        window.fbq('track', 'ViewContent', {
+          content_type: 'product',
+          content_ids: [dress.code],
+          content_name: dress.name,
+          content_category: dress.color,
+        });
+      }
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'view_item', {
+          items: [
+            {
+              item_id: dress.code,
+              item_name: dress.name,
+              item_category: dress.color,
+              item_variant: dress.modelagem || '',
+            },
+          ],
+        });
+      }
+    }
+
+    // Delegated click tracking for all [data-track] CTAs
+    document.addEventListener('click', function (ev) {
+      var target = ev.target && ev.target.closest ? ev.target.closest('[data-track]') : null;
+      if (!target) return;
+      var kind = target.getAttribute('data-track');
+      var source = target.getAttribute('data-track-source') || 'unknown';
+
+      if (kind === 'whatsapp') {
+        var code = target.getAttribute('data-dress-code') || '';
+        var name = target.getAttribute('data-dress-name') || '';
+        var color = target.getAttribute('data-dress-color') || '';
+        var waPayload = { source: source };
+        if (code) {
+          waPayload.dress_code = code;
+          waPayload.content_ids = [code];
+        }
+        if (name) {
+          waPayload.dress_name = name;
+          waPayload.content_name = name;
+        }
+        if (color) {
+          waPayload.dress_color = color;
+          waPayload.content_category = color;
+        }
+        pushDL('whatsapp_schedule', waPayload);
+        if (typeof window.fbq === 'function') {
+          window.fbq('track', 'Contact', waPayload);
+          window.fbq('trackCustom', 'WhatsAppSchedule', waPayload);
+        }
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'generate_lead', Object.assign({ method: 'whatsapp' }, waPayload));
+        }
+      } else if (kind === 'maps') {
+        pushDL('find_location', { source: source });
+        if (typeof window.fbq === 'function') {
+          window.fbq('track', 'FindLocation', { source: source });
+        }
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'select_content', { content_type: 'maps_directions', item_id: source });
+        }
+      } else if (kind === 'instagram') {
+        pushDL('click_instagram', { source: source });
+        if (typeof window.fbq === 'function') {
+          window.fbq('trackCustom', 'ClickInstagram', { source: source });
+        }
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'select_content', { content_type: 'instagram', item_id: source });
+        }
+      }
+    });
+  })();
+</script>

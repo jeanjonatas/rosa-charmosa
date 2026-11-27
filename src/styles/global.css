@@ -19,8 +19,8 @@
   --color-burgundy-deep: #3F1A20;     /* profundo, pra fundos ink */
   --color-burgundy-soft: #8A4552;
 
-  --font-serif: 'Playfair Display Variable', ui-serif, Georgia, serif;
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', ui-serif, Georgia, serif;
+  --font-sans: 'Jost Variable', 'Jost', ui-sans-serif, system-ui, sans-serif;
 
   --radius-pill: 999px;
 
@@ -46,14 +46,16 @@
 
   html {
     font-family: var(--font-sans);
+    font-weight: 300;
     -webkit-font-smoothing: antialiased;
     background: var(--color-cream);
     color: var(--color-ink);
+    overflow-x: clip;
   }
 
   body {
     min-height: 100dvh;
-    overflow-x: hidden;
+    overflow-x: clip;
     position: relative;
   }
 
@@ -87,10 +89,14 @@
     z-index: 2;
   }
 
+  section {
+    overflow-x: clip;
+  }
+
   h1, h2, h3, h4 {
     font-family: var(--font-serif);
     font-weight: 400;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.005em;
   }
 
   ::selection {

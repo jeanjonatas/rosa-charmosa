@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rosacharmosa.com.br/sitemap-index.xml

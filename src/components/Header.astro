@@ -1,78 +1,237 @@
 ---
+import { CONTATO, whatsappLinkFor } from '~/data/vestidos';
 import { asset } from '~/utils/asset';
+
+const whatsappLink = whatsappLinkFor();
 ---
 
 <header
   data-site-header
-  class="fixed inset-x-0 top-0 z-40 transition-[height,box-shadow] duration-300 ease-out"
+  class="fixed inset-x-0 top-0 z-40 transition-all duration-300 ease-out"
 >
   <div class="site-header-bg absolute inset-0 pointer-events-none"></div>
-  <div class="relative mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6 sm:h-24 transition-[height] duration-300">
+
+  <div class="header-inner relative mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-3 px-4 transition-[height] duration-300 sm:h-[4.75rem] sm:px-6">
+    {/* Horizontal brand lockup — crisp, delicate, and highlighted on scroll */}
     <a
       href={asset('/')}
-      class="group inline-flex items-center"
+      class="brand-lockup group relative inline-flex min-w-0 items-center gap-2.5 rounded-full py-1 pr-3 pl-1.5 transition-all duration-300 sm:gap-3"
       aria-label="Rosa Charmosa — vestidos de festa"
     >
+      <span class="brand-tulip-wrap relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-300 sm:h-11 sm:w-11">
+        <img
+          src={asset('/logo/tulipa-mark-160.webp')}
+          alt=""
+          aria-hidden="true"
+          width="88"
+          height="160"
+          class="brand-tulip h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105 sm:h-9"
+          fetchpriority="high"
+        />
+      </span>
       <img
-        src={asset('/logo/rosa-charmosa-dark-560.webp')}
+        src={asset('/logo/rosa-charmosa-wordmark-dark-640.webp')}
         alt="Rosa Charmosa — vestidos de festa"
-        width="560"
-        height="314"
-        class="site-logo h-14 w-auto shrink-0 transition-[height] duration-300 sm:h-16"
+        width="640"
+        height="100"
+        class="brand-wordmark h-7 w-auto max-w-[180px] object-contain transition-all duration-300 sm:h-8 sm:max-w-[235px]"
         fetchpriority="high"
       />
     </a>
 
-    <nav aria-label="Navegação principal" class="hidden items-center gap-8 sm:flex">
-      <a href={asset('/#catalogo')} class="header-link">Catálogo</a>
-      <a href={asset('/#como-funciona')} class="header-link">Como funciona</a>
-      <a href={asset('/#onde-estamos')} class="header-link">Onde estamos</a>
+    {/* Desktop navigation */}
+    <nav aria-label="Navegação principal" class="hidden items-center gap-7 lg:flex">
+      <a href={asset('/#catalogo')} class="header-link whitespace-nowrap">Catálogo</a>
+      <a href={asset('/#como-funciona')} class="header-link whitespace-nowrap">Como funciona</a>
+      <a href={asset('/#onde-estamos')} class="header-link whitespace-nowrap">Onde estamos</a>
+      <a
+        href={whatsappLink}
+        target="_blank"
+        rel="noopener"
+        data-track="whatsapp"
+        data-track-source="header_desktop"
+        class="header-cta inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-gold-light/50 bg-cream/10 px-4 py-2 text-xs font-normal uppercase tracking-[0.16em] text-cream transition-all duration-300 hover:border-gold-light hover:bg-gold hover:text-ink"
+      >
+        <span>Agendar prova</span>
+      </a>
     </nav>
+
+    {/* Mobile & tablet menu toggle (< lg) */}
+    <button
+      type="button"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="mobile-nav-drawer"
+      aria-label="Abrir menu de navegação"
+      class="menu-toggle inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-cream/25 bg-cream/10 text-cream transition-colors hover:border-gold-light/60 hover:bg-cream/15 lg:hidden"
+    >
+      <span class="hamburger" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+  </div>
+
+  {/* Mobile & tablet navigation drawer */}
+  <div
+    id="mobile-nav-drawer"
+    data-mobile-nav
+    aria-hidden="true"
+    class="mobile-drawer lg:hidden"
+  >
+    <div class="mobile-drawer-inner">
+      <div class="mx-auto max-w-6xl px-5 pt-3 pb-6">
+        <nav aria-label="Navegação mobile" class="flex flex-col divide-y divide-cream/10">
+          <a href={asset('/#catalogo')} data-mobile-link class="mobile-nav-link">
+            <span>Catálogo</span>
+            <span class="text-gold-light/70">→</span>
+          </a>
+          <a href={asset('/#como-funciona')} data-mobile-link class="mobile-nav-link">
+            <span>Como funciona</span>
+            <span class="text-gold-light/70">→</span>
+          </a>
+          <a href={asset('/#onde-estamos')} data-mobile-link class="mobile-nav-link">
+            <span>Onde estamos</span>
+            <span class="text-gold-light/70">→</span>
+          </a>
+        </nav>
+
+        <div class="mt-5 flex flex-col gap-3 border-t border-gold/20 pt-5">
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener"
+            data-mobile-link
+            data-track="whatsapp"
+            data-track-source="header_mobile"
+            class="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] px-6 py-3 text-sm font-medium text-white shadow-[0_8px_24px_-8px_rgba(37,211,102,0.5)] transition-transform active:scale-[0.98]"
+          >
+            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.8-1.6-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3 4.8 4.2 1.8.8 2.5.9 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.3C8.3 21.5 10.1 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z"/>
+            </svg>
+            <span>Agendar prova pelo WhatsApp</span>
+          </a>
+
+          <div class="flex items-center justify-between text-xs text-cream/65">
+            <span>Setor Campinas · Goiânia</span>
+            <a
+              href={CONTATO.instagramUrl}
+              target="_blank"
+              rel="noopener"
+              data-mobile-link
+              data-track="instagram"
+              data-track-source="header_mobile"
+              class="text-rose-soft transition-colors hover:text-gold-light"
+            >
+              @{CONTATO.instagramHandle}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
+<script is:inline>
+  (function () {
+    const header = document.querySelector('header[data-site-header]');
+    const toggle = header?.querySelector('[data-menu-toggle]');
+    const drawer = header?.querySelector('[data-mobile-nav]');
+    if (!header || !toggle || !drawer) return;
+
+    const setOpen = (open) => {
+      header.classList.toggle('is-menu-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? 'Fechar menu de navegação' : 'Abrir menu de navegação');
+      drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+    };
+
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      setOpen(!isOpen);
+    });
+
+    drawer.querySelectorAll('[data-mobile-link]').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && header.classList.contains('is-menu-open')) {
+        setOpen(false);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (header.classList.contains('is-menu-open') && !header.contains(e.target)) {
+        setOpen(false);
+      }
+    });
+  })();
+</script>
+
 <style>
-  /* Header is always on the marsala/burgundy band */
   .site-header-bg {
-    background: var(--color-burgundy-deep);
+    background-color: var(--color-burgundy-deep);
     background-image:
-      radial-gradient(60% 150% at 20% 100%, color-mix(in oklab, var(--color-rose) 18%, transparent), transparent 70%),
-      radial-gradient(60% 150% at 90% 100%, color-mix(in oklab, var(--color-gold) 12%, transparent), transparent 70%);
-    box-shadow: 0 1px 0 color-mix(in oklab, var(--color-gold) 25%, transparent),
-                0 10px 32px -16px rgb(0 0 0 / 0.35);
-    transition: box-shadow 0.3s ease;
+      radial-gradient(50% 180% at 15% 100%, color-mix(in oklab, var(--color-rose) 22%, transparent), transparent 70%),
+      radial-gradient(50% 180% at 88% 100%, color-mix(in oklab, var(--color-gold) 15%, transparent), transparent 70%);
+    box-shadow: 0 1px 0 color-mix(in oklab, var(--color-gold) 28%, transparent),
+                0 10px 28px -14px rgb(0 0 0 / 0.32);
+    transition: background-color 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
   }
+
+  /* Scrolled state: frosted deep burgundy + luminous highlight around brand lockup */
   header[data-site-header].is-scrolled .site-header-bg {
-    box-shadow: 0 1px 0 color-mix(in oklab, var(--color-gold) 40%, transparent),
-                0 14px 36px -12px rgb(0 0 0 / 0.5);
+    background-color: color-mix(in oklab, var(--color-burgundy-deep) 90%, transparent);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 1px 0 color-mix(in oklab, var(--color-gold-light) 48%, transparent),
+                0 14px 36px -12px rgb(22 8 11 / 0.55);
   }
-  header[data-site-header].is-scrolled > div:last-child {
+
+  header[data-site-header].is-scrolled .header-inner {
     height: 4rem;
   }
-  header[data-site-header].is-scrolled .site-logo {
-    height: 2.75rem;
-  }
   @media (min-width: 640px) {
-    header[data-site-header].is-scrolled > div:last-child {
-      height: 4.5rem;
+    header[data-site-header].is-scrolled .header-inner {
+      height: 4.35rem;
     }
-    header[data-site-header].is-scrolled .site-logo {
-      height: 3rem;
-    }
+  }
+
+  /* Delicate ambient medallion behind the tulip, elevated when scrolling */
+  .brand-tulip-wrap {
+    background: radial-gradient(circle, color-mix(in oklab, var(--color-rose) 18%, transparent) 0%, transparent 72%);
+  }
+
+  header[data-site-header].is-scrolled .brand-lockup {
+    background: linear-gradient(135deg,
+      color-mix(in oklab, var(--color-rose) 14%, transparent),
+      color-mix(in oklab, var(--color-gold) 8%, transparent));
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-rose-soft) 28%, transparent),
+                0 4px 18px -6px rgb(233 168 184 / 0.28);
+  }
+  header[data-site-header].is-scrolled .brand-tulip-wrap {
+    background: radial-gradient(circle, color-mix(in oklab, var(--color-rose) 28%, transparent) 0%, transparent 72%);
+  }
+  header[data-site-header].is-scrolled .brand-wordmark {
+    filter: drop-shadow(0 1px 8px rgb(251 247 244 / 0.16));
   }
 
   .header-link {
     position: relative;
-    font-size: 0.84rem;
-    letter-spacing: 0.02em;
-    color: color-mix(in oklab, var(--color-cream) 85%, transparent);
+    font-size: 0.86rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-cream) 86%, transparent);
     transition: color 0.2s ease;
   }
   .header-link::after {
     content: '';
     position: absolute;
     left: 0;
-    bottom: -4px;
+    bottom: -5px;
     height: 1px;
     width: 0;
     background: var(--color-gold-light);
@@ -83,5 +242,86 @@ import { asset } from '~/utils/asset';
   }
   .header-link:hover::after {
     width: 100%;
+  }
+
+  /* Hamburger animation */
+  .hamburger {
+    position: relative;
+    display: block;
+    width: 18px;
+    height: 13px;
+  }
+  .hamburger span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    border-radius: 999px;
+    background: var(--color-cream);
+    transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.2s ease, top 0.28s ease;
+  }
+  .hamburger span:nth-child(1) { top: 0; }
+  .hamburger span:nth-child(2) { top: 5.5px; width: 78%; left: auto; right: 0; }
+  .hamburger span:nth-child(3) { top: 11px; }
+
+  header[data-site-header].is-menu-open .hamburger span:nth-child(1) {
+    top: 5.5px;
+    transform: rotate(45deg);
+  }
+  header[data-site-header].is-menu-open .hamburger span:nth-child(2) {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+  header[data-site-header].is-menu-open .hamburger span:nth-child(3) {
+    top: 5.5px;
+    transform: rotate(-45deg);
+  }
+
+  /* Mobile slide-down drawer */
+  .mobile-drawer {
+    position: relative;
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    background: color-mix(in oklab, var(--color-burgundy-deep) 96%, transparent);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-top: 1px solid transparent;
+    box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.55);
+    transition: grid-template-rows 0.32s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.25s ease, visibility 0.32s ease, border-color 0.25s ease;
+  }
+  @media (min-width: 1024px) {
+    .mobile-drawer {
+      display: none;
+    }
+  }
+  .mobile-drawer > .mobile-drawer-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+  header[data-site-header].is-menu-open .mobile-drawer {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    border-top-color: color-mix(in oklab, var(--color-gold-light) 22%, transparent);
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.95rem 0.25rem;
+    font-family: var(--font-serif);
+    font-size: 1.45rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    color: var(--color-cream);
+    transition: color 0.2s ease, padding-left 0.2s ease;
+  }
+  .mobile-nav-link:hover,
+  .mobile-nav-link:active {
+    color: var(--color-rose-soft);
+    padding-left: 0.35rem;
   }
 </style>

@@ -1,7 +1,12 @@
 ---
-import '@fontsource-variable/playfair-display';
-import '@fontsource-variable/inter';
+import '@fontsource/cormorant-garamond/300.css';
+import '@fontsource/cormorant-garamond/400.css';
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/400-italic.css';
+import '@fontsource/cormorant-garamond/500-italic.css';
+import '@fontsource-variable/jost';
 import '~/styles/global.css';
+import Analytics, { type DressTrackMeta } from '~/components/Analytics.astro';
 import { CONTATO } from '~/data/vestidos';
 import { asset } from '~/utils/asset';
 
@@ -9,30 +14,52 @@ type Props = {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'product';
   path?: string;
   noindex?: boolean;
+  dress?: DressTrackMeta;
 };
 
 const {
   title = 'Aluguel de Vestidos de Festa em Goiânia — Setor Campinas | Rosa Charmosa',
   description = 'Aluguel de vestidos de madrinha, formatura, mãe dos noivos e debutante no Setor Campinas, Goiânia. Mais de 13 anos vestindo as Charmosas. Agende sua prova pelo WhatsApp.',
-  ogImage = '/og-cover.svg',
+  ogImage = '/og-cover.jpg',
+  ogImageAlt = 'Rosa Charmosa — Aluguel de vestidos de festa no Setor Campinas, Goiânia',
+  ogType = 'website',
   path = '',
   noindex = false,
+  dress,
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://rosacharmosa.com.br';
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonical = `${siteUrl}${basePath}${path}`;
+const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${asset(ogImage)}`;
+const ogImageMime = fullOgImage.endsWith('.webp')
+  ? 'image/webp'
+  : fullOgImage.endsWith('.png')
+    ? 'image/png'
+    : 'image/jpeg';
+
+const metaPixelId = (import.meta.env.PUBLIC_META_PIXEL_ID ?? '').trim();
+const gtmId = (import.meta.env.PUBLIC_GTM_ID ?? '').trim();
+const metaDomainVerification = (import.meta.env.PUBLIC_META_DOMAIN_VERIFICATION ?? '').trim();
+const googleSiteVerification = (import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? '').trim();
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ClothingStore',
+  '@id': `${siteUrl}${basePath}/#organization`,
   name: CONTATO.nome,
-  description: 'Loja de locação de vestidos de festa em Goiânia-GO. Madrinhas, formatura, mãe dos noivos, debutantes e convidadas.',
+  alternateName: 'Rosa Charmosa — Locação Moda Festa',
+  description:
+    'Loja de locação de vestidos de festa em Goiânia-GO (Setor Campinas). Madrinhas, formatura, mãe dos noivos, debutantes e convidadas. Mais de 13 anos de tradição.',
   url: `${siteUrl}${basePath}/`,
   telephone: `+${CONTATO.whatsapp}`,
-  image: `${siteUrl}${asset(ogImage)}`,
+  logo: `${siteUrl}${asset('/logo/rosa-charmosa.png')}`,
+  image: [fullOgImage, `${siteUrl}${asset('/og-cover.jpg')}`],
+  hasMap: CONTATO.mapsUrl,
   address: {
     '@type': 'PostalAddress',
     streetAddress: CONTATO.endereco.rua,
@@ -40,6 +67,18 @@ const jsonLd = {
     addressRegion: CONTATO.endereco.estado,
     postalCode: CONTATO.endereco.cep,
     addressCountry: 'BR',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: -16.6708,
+    longitude: -49.2869,
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: `+${CONTATO.whatsapp}`,
+    contactType: 'customer service',
+    areaServed: 'BR',
+    availableLanguage: ['Portuguese'],
   },
   openingHoursSpecification: [
     {
@@ -57,10 +96,10 @@ const jsonLd = {
   ],
   sameAs: [CONTATO.instagramUrl],
   priceRange: '$$',
-  areaServed: {
-    '@type': 'City',
-    name: 'Goiânia',
-  },
+  areaServed: [
+    { '@type': 'City', name: 'Goiânia' },
+    { '@type': 'AdministrativeArea', name: 'Goiás' },
+  ],
 };
 ---
 
@@ -69,36 +108,75 @@ const jsonLd = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#FAFAF7" />
+    <meta name="theme-color" content="#3F1A20" />
     <link rel="icon" type="image/png" sizes="32x32" href={asset('/favicon-32.png')} />
     <link rel="icon" type="image/png" sizes="512x512" href={asset('/favicon-512.png')} />
     <link rel="apple-touch-icon" sizes="180x180" href={asset('/apple-touch-icon.png')} />
+    <link rel="sitemap" href={asset('/sitemap-index.xml')} />
     <link rel="canonical" href={canonical} />
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {metaDomainVerification && <meta name="facebook-domain-verification" content={metaDomainVerification} />}
+    {googleSiteVerification && <meta name="google-site-verification" content={googleSiteVerification} />}
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="Rosa Charmosa" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={`${siteUrl}${asset(ogImage)}`} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image" content={fullOgImage} />
+    <meta property="og:image:type" content={ogImageMime} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    {ogImage === '/og-cover.jpg' && (
+      <>
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+      </>
+    )}
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={`${siteUrl}${asset(ogImage)}`} />
+    <meta name="twitter:image" content={fullOgImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <meta name="geo.region" content="BR-GO" />
-    <meta name="geo.placename" content="Goiânia" />
+    <meta name="geo.placename" content="Goiânia, Setor Campinas" />
+    <meta name="geo.position" content="-16.6708;-49.2869" />
+    <meta name="ICBM" content="-16.6708, -49.2869" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <Analytics dress={dress} />
   </head>
   <body>
+    {
+      gtmId && (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            height="0"
+            width="0"
+            style="display:none;visibility:hidden"
+          />
+        </noscript>
+      )
+    }
+    {
+      metaPixelId && (
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style="display:none"
+            alt=""
+            src={`https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1`}
+          />
+        </noscript>
+      )
+    }
+
     <slot />
 
     <script is:inline>
@@ -117,19 +195,26 @@ const jsonLd = {
         },
         { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
       );
-      document.addEventListener('DOMContentLoaded', () => {
+      const initReveals = () => {
         document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
-      });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initReveals);
+      } else {
+        initReveals();
+      }
 
-      // Header shrink on scroll
+      // Header scrolled state (elevates logo glow & frosted burgundy bar)
       const header = document.querySelector('header[data-site-header]');
       if (header) {
         let ticking = false;
         const update = () => {
-          if (window.scrollY > 24) header.classList.add('is-scrolled');
-          else header.classList.remove('is-scrolled');
+          const y = window.scrollY;
+          header.classList.toggle('is-scrolled', y > 24);
+          document.body.classList.toggle('has-scrolled', y > 100);
           ticking = false;
         };
+        update();
         window.addEventListener(
           'scroll',
           () => {

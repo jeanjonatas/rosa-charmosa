@@ -25,13 +25,19 @@ const altBase = `Vestido ${cor.label} ${modelagem} ${vestido.nome} — Rosa Char
 const title = `${vestido.nome} — ${cor.label} · ${modelagem} | Rosa Charmosa Goiânia`;
 const description = `${vestido.descricao} Aluguel em Goiânia (Setor Campinas) — agende sua prova pelo WhatsApp.`;
 
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://rosacharmosa.com.br';
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const dressUrl = `${siteUrl}${basePath}/vestido/${vestido.id}`;
+const isRasterImage = !vestido.imagens[0].endsWith('.svg');
+const ogImage = isRasterImage ? vestido.imagens[0] : '/og-cover.jpg';
+
 const jsonLdProduct = {
   '@context': 'https://schema.org',
   '@type': 'Product',
   name: `${vestido.nome} — ${cor.label}`,
   description: vestido.descricao,
   sku: vestido.codigo,
-  image: vestido.imagens.map((src) => `https://rosacharmosa.com.br${src}`),
+  image: vestido.imagens.map((src) => `${siteUrl}${asset(src)}`),
   color: cor.label,
   category: 'Aluguel de Vestido de Festa',
   brand: { '@type': 'Brand', name: 'Rosa Charmosa' },
@@ -39,65 +45,101 @@ const jsonLdProduct = {
     '@type': 'Offer',
     availability: 'https://schema.org/InStock',
     priceCurrency: 'BRL',
-    url: `https://rosacharmosa.com.br/vestido/${vestido.id}`,
+    url: dressUrl,
     seller: { '@type': 'ClothingStore', name: 'Rosa Charmosa' },
   },
 };
+
+const jsonLdBreadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Início',
+      item: `${siteUrl}${basePath}/`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Catálogo',
+      item: `${siteUrl}${basePath}/#catalogo`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: vestido.nome,
+      item: dressUrl,
+    },
+  ],
+};
 ---
 
-<Base title={title} description={description} path={`/vestido/${vestido.id}`}>
+<Base
+  title={title}
+  description={description}
+  ogImage={ogImage}
+  ogImageAlt={altBase}
+  ogType="product"
+  path={`/vestido/${vestido.id}`}
+  dress={{ code: vestido.codigo, name: vestido.nome, color: cor.label, modelagem }}
+>
   <Header />
-  <main class="mx-auto max-w-6xl px-4 pb-32 pt-28 sm:px-6 sm:pt-36 sm:pb-20">
-    <nav class="mb-6 text-sm text-ink/55" aria-label="Breadcrumb">
-      <a href={asset('/')} class="hover:text-ink">Início</a>
+  <main class="mx-auto w-full max-w-6xl px-4 pb-32 pt-24 sm:px-6 sm:pt-28 lg:pb-20">
+    <nav class="mb-5 flex flex-wrap items-center gap-y-1 text-xs font-light tracking-[0.04em] text-ink/60 sm:mb-6 sm:text-sm" aria-label="Breadcrumb">
+      <a href={asset('/')} class="transition-colors hover:text-burgundy">Início</a>
       <span class="mx-1.5 text-ink/30">/</span>
-      <a href={asset('/#catalogo')} class="hover:text-ink">Catálogo</a>
+      <a href={asset('/#catalogo')} class="transition-colors hover:text-burgundy">Catálogo</a>
       <span class="mx-1.5 text-ink/30">/</span>
-      <span class="text-ink/80">{vestido.nome}</span>
+      <span class="text-ink/85">{vestido.nome}</span>
     </nav>
 
-    <div class="grid gap-8 md:grid-cols-2 md:items-start md:gap-12 lg:gap-16">
-      <div class="galeria-wrap mx-auto w-full max-w-md md:max-w-none" style={{ viewTransitionName: `v-${vestido.id}` }}>
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-start md:gap-10 lg:gap-16">
+      <div
+        class="galeria-wrap mx-auto w-full min-w-0 max-w-full sm:max-w-md md:max-w-none"
+        style={{ viewTransitionName: `v-${vestido.id}` }}
+      >
         <Galeria client:load imagens={vestido.imagens.map(asset)} alt={altBase} />
       </div>
 
-      <div class="flex flex-col md:sticky md:top-28">
-        <div class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/55">
+      <div class="flex min-w-0 flex-col md:sticky md:top-28">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-normal uppercase tracking-[0.2em] text-ink/60">
           <span class="color-swatch" style={{ background: cor.hex }} aria-hidden="true"></span>
           <span>{cor.label}</span>
           {vestido.premium && (
             <>
               <span class="opacity-40">·</span>
-              <span class="text-gold">Premium</span>
+              <span class="text-gold-deep">Premium</span>
             </>
           )}
         </div>
 
-        <h1 class="mt-3 font-serif text-4xl leading-tight text-ink sm:text-5xl">
+        <h1 class="mt-2.5 font-serif text-4xl font-light leading-[1.08] text-ink sm:text-5xl">
           {vestido.nome}
         </h1>
-        <p class="mt-1 text-sm font-medium text-ink/55">{vestido.codigo}</p>
+        <p class="mt-1 text-xs font-normal uppercase tracking-[0.18em] text-ink/50">{vestido.codigo}</p>
 
-        <p class="mt-6 text-base leading-relaxed text-ink/75">{vestido.descricao}</p>
+        <p class="mt-5 text-[0.98rem] font-light leading-relaxed text-ink/80 sm:text-base">{vestido.descricao}</p>
 
-        <dl class="mt-8 grid grid-cols-2 gap-5 border-y border-ink/8 py-6 text-sm">
-          <div>
-            <dt class="text-xs font-medium uppercase tracking-[0.15em] text-ink/50">Modelagem</dt>
-            <dd class="mt-1 text-ink">{modelagem}</dd>
+        <dl class="mt-7 grid grid-cols-2 gap-5 border-y border-ink/10 py-6 text-sm">
+          <div class="min-w-0">
+            <dt class="text-[0.7rem] font-normal uppercase tracking-[0.18em] text-ink/50">Modelagem</dt>
+            <dd class="mt-1.5 font-normal text-ink">{modelagem}</dd>
           </div>
-          <div>
-            <dt class="text-xs font-medium uppercase tracking-[0.15em] text-ink/50">Tamanhos</dt>
-            <dd class="mt-1 flex flex-wrap gap-1.5">
+          <div class="min-w-0">
+            <dt class="text-[0.7rem] font-normal uppercase tracking-[0.18em] text-ink/50">Tamanhos</dt>
+            <dd class="mt-1.5 flex flex-wrap gap-1.5">
               {vestido.tamanhos.map((t) => (
-                <span class="rounded-full bg-cream px-2.5 py-0.5 text-[0.7rem] font-medium text-ink shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ink)_10%,transparent)]">{t}</span>
+                <span class="rounded-full bg-cream px-2.5 py-0.5 text-[0.72rem] font-normal text-ink shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ink)_12%,transparent)]">{t}</span>
               ))}
             </dd>
           </div>
-          <div class="col-span-2">
-            <dt class="text-xs font-medium uppercase tracking-[0.15em] text-ink/50">Ocasiões</dt>
-            <dd class="mt-1 flex flex-wrap gap-1.5">
+          <div class="col-span-2 min-w-0">
+            <dt class="text-[0.7rem] font-normal uppercase tracking-[0.18em] text-ink/50">Ocasiões</dt>
+            <dd class="mt-1.5 flex flex-wrap gap-1.5">
               {vestido.ocasioes.map((o) => (
-                <span class="rounded-full border border-ink/10 px-2.5 py-0.5 text-[0.75rem] text-ink/75">{OCASIOES[o]}</span>
+                <span class="rounded-full border border-ink/12 bg-white/50 px-3 py-0.5 text-[0.76rem] font-light text-ink/80">{OCASIOES[o]}</span>
               ))}
             </dd>
           </div>
@@ -107,43 +149,48 @@ const jsonLdProduct = {
           href={whatsappLink}
           target="_blank"
           rel="noopener"
-          class="cta-agendar group relative mt-8 inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25D366] px-7 py-4 text-sm font-medium text-white shadow-[0_12px_32px_-8px_rgba(37,211,102,0.4)] transition-transform active:scale-[0.98] sm:text-base"
+          data-track="whatsapp"
+          data-track-source="dress_detail_main"
+          data-dress-code={vestido.codigo}
+          data-dress-name={vestido.nome}
+          data-dress-color={cor.label}
+          class="cta-agendar group relative mt-7 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] px-6 py-4 text-sm font-medium text-white shadow-[0_12px_32px_-8px_rgba(37,211,102,0.45)] transition-transform active:scale-[0.98] sm:text-base"
         >
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.8-1.6-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3 4.8 4.2 1.8.8 2.5.9 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.3C8.3 21.5 10.1 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z"/>
           </svg>
           <span>Agendar prova deste vestido</span>
-          <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <svg class="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span class="cta-shine absolute inset-y-0 w-10 -skew-x-12 bg-white/30"></span>
         </a>
 
-        <p class="mt-3 text-center text-xs text-ink/50">
-          Mensagem já vem preenchida com <span class="font-medium text-ink/70">{vestido.codigo}</span> · atendimento rápido no WhatsApp
+        <p class="mt-3 text-center text-xs font-light text-ink/55">
+          Mensagem já vem preenchida com <span class="font-normal text-ink/80">{vestido.codigo}</span> · atendimento rápido no WhatsApp
         </p>
       </div>
     </div>
 
     {
       relacionados.length > 0 && (
-        <aside class="mt-20">
-          <h2 class="font-serif text-2xl text-ink sm:text-3xl">
-            Peças <span class="italic text-rose">relacionadas</span>
+        <aside class="mt-16 sm:mt-20">
+          <h2 class="font-serif text-3xl font-light text-ink sm:text-4xl">
+            Peças <span class="italic text-burgundy">relacionadas</span>
           </h2>
           <ul class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5">
             {relacionados.map((v) => {
               const vc = CORES[v.cor];
               return (
                 <li>
-                  <a href={asset(`/vestido/${v.id}`)} class="relacionado-card group block overflow-hidden rounded-xl bg-white/50">
+                  <a href={asset(`/vestido/${v.id}`)} class="relacionado-card group block overflow-hidden rounded-xl bg-white/50 shadow-[var(--shadow-card)]">
                     <figure class="relative aspect-[3/4] overflow-hidden">
                       <span class="absolute left-3 top-3 z-10 h-5 w-5 rounded-full ring-2 ring-white/60" style={{ background: vc.hex }} aria-hidden="true"></span>
-                      <img src={asset(v.imagens[0])} alt={`${v.nome} — ${vc.label}`} loading="lazy" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"/>
-                      <div class="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent"></div>
+                      <img src={asset(v.imagens[0])} alt={`${v.nome} — ${vc.label}`} loading="lazy" class="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"/>
+                      <div class="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent"></div>
                       <figcaption class="absolute inset-x-0 bottom-0 p-3 text-cream">
-                        <p class="font-serif text-base italic leading-tight">{v.nome}</p>
-                        <p class="text-[0.65rem] uppercase tracking-[0.18em] text-cream/75">{v.codigo}</p>
+                        <p class="font-serif text-lg italic leading-tight">{v.nome}</p>
+                        <p class="text-[0.65rem] uppercase tracking-[0.18em] text-cream/80">{v.codigo}</p>
                       </figcaption>
                     </figure>
                   </a>
@@ -160,7 +207,7 @@ const jsonLdProduct = {
     <div class="sticky-cta-wrap">
       <div class="sticky-cta-info">
         <span class="sticky-cta-swatch" style={{ background: cor.hex }} aria-hidden="true"></span>
-        <div>
+        <div class="min-w-0 flex-1">
           <p class="sticky-cta-name">{vestido.nome}</p>
           <p class="sticky-cta-code">{vestido.codigo} · {cor.label}</p>
         </div>
@@ -169,9 +216,14 @@ const jsonLdProduct = {
         href={whatsappLink}
         target="_blank"
         rel="noopener"
+        data-track="whatsapp"
+        data-track-source="dress_detail_sticky"
+        data-dress-code={vestido.codigo}
+        data-dress-name={vestido.nome}
+        data-dress-color={cor.label}
         class="sticky-cta-btn group"
       >
-        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.8-1.6-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3 4.8 4.2 1.8.8 2.5.9 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.3C8.3 21.5 10.1 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z"/>
         </svg>
         <span class="whitespace-nowrap">Agendar prova</span>
@@ -183,6 +235,7 @@ const jsonLdProduct = {
   <BotoesFlutuantes />
 
   <script type="application/ld+json" set:html={JSON.stringify(jsonLdProduct)} />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLdBreadcrumb)} />
 
   <style>
     .color-swatch {
@@ -208,20 +261,21 @@ const jsonLdProduct = {
       .cta-agendar .cta-shine { animation: none !important; display: none; }
     }
 
-    /* Sticky CTA bar (mobile) */
+    /* Sticky CTA bar (mobile & tablet < 1024px) */
     .sticky-cta {
       position: fixed;
       inset-inline: 0;
       bottom: 0;
       z-index: 45;
-      background: color-mix(in oklab, var(--color-cream) 85%, transparent);
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      border-top: 1px solid color-mix(in oklab, var(--color-gold) 25%, transparent);
-      padding: 0.75rem 1rem;
-      padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+      background: color-mix(in oklab, var(--color-cream) 92%, transparent);
+      backdrop-filter: blur(18px) saturate(170%);
+      -webkit-backdrop-filter: blur(18px) saturate(170%);
+      border-top: 1px solid color-mix(in oklab, var(--color-gold) 32%, transparent);
+      box-shadow: 0 -10px 30px -16px rgb(42 26 30 / 0.18);
+      padding: 0.7rem 1rem;
+      padding-bottom: max(0.7rem, env(safe-area-inset-bottom));
       transform: translate3d(0, 110%, 0);
-      animation: sticky-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) 0.4s forwards;
+      animation: sticky-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) 0.3s forwards;
     }
     @keyframes sticky-in {
       to { transform: translate3d(0, 0, 0); }
@@ -232,10 +286,10 @@ const jsonLdProduct = {
     .sticky-cta-wrap {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 0.75rem;
       max-width: 72rem;
       margin-inline: auto;
-      padding-right: 4rem;
     }
     .sticky-cta-info {
       display: flex;
@@ -246,51 +300,60 @@ const jsonLdProduct = {
     }
     .sticky-cta-swatch {
       display: inline-block;
-      width: 0.95rem;
-      height: 0.95rem;
+      width: 0.9rem;
+      height: 0.9rem;
       border-radius: 999px;
       box-shadow: inset 0 0 0 1.2px color-mix(in oklab, white 60%, transparent);
       flex-shrink: 0;
     }
     .sticky-cta-name {
       font-family: var(--font-serif);
-      font-size: 1rem;
+      font-size: 1.08rem;
       font-style: italic;
-      line-height: 1.1;
+      line-height: 1.15;
       color: var(--color-ink);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     .sticky-cta-code {
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
+      font-size: 0.66rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: color-mix(in oklab, var(--color-ink) 50%, transparent);
+      color: color-mix(in oklab, var(--color-ink) 55%, transparent);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .sticky-cta-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.9rem 1.25rem;
-      min-height: 48px;
+      gap: 0.45rem;
+      padding: 0.78rem 1.1rem;
+      min-height: 44px;
       border-radius: 999px;
       background: linear-gradient(135deg, #25D366, #128C7E);
       color: white;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.85rem;
+      font-weight: 500;
       text-decoration: none;
-      box-shadow: 0 2px 6px -1px rgb(37 211 102 / 0.45),
-                  0 12px 24px -8px rgb(37 211 102 / 0.55),
-                  inset 0 1px 0 rgb(255 255 255 / 0.3);
+      box-shadow: 0 2px 6px -1px rgb(37 211 102 / 0.42),
+                  0 10px 22px -8px rgb(37 211 102 / 0.5),
+                  inset 0 1px 0 rgb(255 255 255 / 0.28);
       transition: transform 0.15s ease, filter 0.2s ease;
       flex-shrink: 0;
+    }
+    @media (min-width: 640px) {
+      .sticky-cta-btn {
+        padding: 0.85rem 1.35rem;
+        font-size: 0.9rem;
+      }
     }
     .sticky-cta-btn:active {
       transform: scale(0.96);
     }
     .sticky-cta-btn:hover {
-      filter: brightness(1.08);
+      filter: brightness(1.06);
     }
 
     @media (prefers-reduced-motion: reduce) {
