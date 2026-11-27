@@ -1,0 +1,75 @@
+---
+import Ornament from './Ornament.astro';
+
+const passos = [
+  {
+    n: '01',
+    titulo: 'Escolha e agende',
+    descricao: 'Navegue pelo catálogo, toque no vestido que te encantou e agende sua prova no sábado pelo WhatsApp.',
+  },
+  {
+    n: '02',
+    titulo: 'Ajuste sob medida',
+    descricao: 'Nossa costureira ajusta a peça pro seu corpo com carinho. Tudo pronto pra você ficar impecável.',
+  },
+  {
+    n: '03',
+    titulo: 'Retirada',
+    descricao: 'Retire a peça 1 dia antes do evento. Testamos tudo junto pra garantir que nada vai te preocupar no grande dia.',
+  },
+  {
+    n: '04',
+    titulo: 'Devolução sem lavar',
+    descricao: 'Vive o evento tranquila. Devolve do jeito que estiver, no primeiro dia útil — a gente cuida da lavagem.',
+  },
+];
+---
+
+<div class="section-divider">
+  <Ornament variant="flourish" />
+</div>
+
+<section id="como-funciona" class="section-tone-marsala relative isolate scroll-mt-16 py-16 sm:py-24">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <span class="section-numeral" aria-hidden="true">02</span>
+
+    <header class="relative mb-12 flex flex-col gap-2">
+      <p class="editorial-eyebrow" data-reveal>Como funciona</p>
+      <h2 class="font-serif text-4xl leading-[1.05] text-ink sm:text-5xl" data-reveal>
+        Quatro passos até o seu <span class="italic text-burgundy">vestido dos sonhos</span>
+      </h2>
+    </header>
+
+  <ol class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      passos.map((p, i) => (
+        <li class="passo-card group relative" data-reveal style={{ '--delay': `${i * 100}ms` }}>
+          <div class="relative h-full overflow-hidden rounded-2xl border border-ink/8 bg-white/40 p-6 transition-all duration-500 hover:border-gold/60 hover:bg-white/80 hover:shadow-[var(--shadow-card-hover)]">
+            <div class="flex items-start justify-between">
+              <span class="font-serif text-4xl italic text-rose/60 transition-colors duration-500 group-hover:text-gold">{p.n}</span>
+              <span class="h-8 w-8 rounded-full border border-ink/10 bg-cream/60 transition-transform duration-500 group-hover:rotate-45 group-hover:border-gold/60">
+                <span class="block h-full w-full rounded-full bg-gradient-to-br from-transparent to-gold/20"></span>
+              </span>
+            </div>
+            <h3 class="mt-6 font-serif text-xl leading-tight text-ink">{p.titulo}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink/65">{p.descricao}</p>
+            <div class="mt-5 h-px w-0 bg-gold/70 transition-all duration-700 group-hover:w-full"></div>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  </div>
+</section>
+
+<style>
+  .passo-card {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition: opacity 0.7s ease var(--delay), transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) var(--delay);
+  }
+  .passo-card.in-view {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+</style>

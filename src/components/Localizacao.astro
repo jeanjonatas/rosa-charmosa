@@ -1,0 +1,158 @@
+---
+import { CONTATO } from '~/data/vestidos';
+import Ornament from './Ornament.astro';
+---
+
+<div class="section-divider">
+  <Ornament variant="flourish" />
+</div>
+
+<section id="onde-estamos" class="section-tone-ink relative isolate scroll-mt-16 overflow-hidden py-16 sm:py-24">
+  <div class="loc-glow pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-6xl px-4 sm:px-6">
+    <span class="section-numeral section-numeral-dark" aria-hidden="true">04</span>
+
+    <header class="relative mb-12 flex flex-col gap-2">
+      <p class="editorial-eyebrow editorial-eyebrow-dark" data-reveal>Onde estamos</p>
+      <h2 class="font-serif text-4xl leading-[1.05] sm:text-5xl" data-reveal>
+        Te esperamos no <span class="italic text-gold-light">Setor Campinas</span>
+      </h2>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+      <div class="loc-card relative rounded-2xl p-7 sm:p-9" data-reveal>
+        <div class="loc-card-border pointer-events-none absolute inset-0 rounded-2xl"></div>
+
+        <h3 class="font-serif text-3xl">{CONTATO.nome}</h3>
+        <p class="mt-1 text-sm italic text-cream/55">{CONTATO.tagline}</p>
+
+        <dl class="mt-7 space-y-5 text-sm">
+          <div>
+            <dt class="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-gold-light/70">Endereço</dt>
+            <dd class="mt-2 leading-relaxed text-cream/90">
+              {CONTATO.endereco.rua}<br />
+              {CONTATO.endereco.bairro} — {CONTATO.endereco.cidade}/{CONTATO.endereco.estado}<br />
+              <span class="text-cream/50">CEP {CONTATO.endereco.cep}</span>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-gold-light/70">Horário</dt>
+            <dd class="mt-2 space-y-0.5 text-cream/90">
+              <p>{CONTATO.horario.semana}</p>
+              <p>{CONTATO.horario.sabado}</p>
+              <p class="text-cream/50">{CONTATO.horario.domingo}</p>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-gold-light/70">WhatsApp</dt>
+            <dd class="mt-2 text-cream/90">{CONTATO.telefone}</dd>
+          </div>
+        </dl>
+
+        <a
+          href={CONTATO.mapsUrl}
+          target="_blank"
+          rel="noopener"
+          class="group mt-9 inline-flex items-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-medium text-ink transition-all duration-200 hover:bg-gold-light active:scale-[0.97]"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <circle cx="12" cy="9" r="2.3" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+          Abrir rota no Google Maps
+          <span class="transition-transform group-hover:translate-x-1">→</span>
+        </a>
+      </div>
+
+      <div class="loc-map relative overflow-hidden rounded-2xl" data-reveal>
+        <div class="loc-map-border pointer-events-none absolute inset-0 rounded-2xl"></div>
+        <div class="aspect-[4/3] w-full lg:aspect-auto lg:h-full lg:min-h-[460px]">
+          <iframe
+            title="Mapa com a localização da Rosa Charmosa no Setor Campinas, Goiânia"
+            src={CONTATO.mapsEmbedUrl}
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            class="h-full w-full border-0"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  [data-reveal].in-view {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .loc-glow {
+    background:
+      radial-gradient(45% 55% at 10% 20%, color-mix(in oklab, var(--color-gold) 22%, transparent), transparent 65%),
+      radial-gradient(40% 50% at 95% 90%, color-mix(in oklab, var(--color-rose) 22%, transparent), transparent 70%);
+    opacity: 0.7;
+  }
+
+  .section-numeral-dark {
+    background: linear-gradient(135deg,
+      color-mix(in oklab, var(--color-gold) 55%, transparent),
+      color-mix(in oklab, var(--color-rose-deep) 45%, transparent) 60%,
+      transparent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    opacity: 0.35;
+  }
+
+  .editorial-eyebrow-dark {
+    color: color-mix(in oklab, var(--color-gold-light) 80%, transparent) !important;
+  }
+  .editorial-eyebrow-dark::before {
+    background: var(--color-gold) !important;
+  }
+
+  .loc-card {
+    background: linear-gradient(135deg,
+      color-mix(in oklab, var(--color-cream) 7%, transparent),
+      color-mix(in oklab, var(--color-cream) 3%, transparent));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .loc-card-border {
+    padding: 1.5px;
+    background: linear-gradient(145deg,
+      color-mix(in oklab, var(--color-gold) 55%, transparent),
+      color-mix(in oklab, var(--color-gold) 10%, transparent) 40%,
+      transparent 60%,
+      color-mix(in oklab, var(--color-rose-deep) 25%, transparent));
+    -webkit-mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+            mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+  }
+
+  .loc-map {
+    box-shadow: 0 32px 64px -24px rgb(0 0 0 / 0.5);
+  }
+  .loc-map iframe {
+    filter: saturate(1.1) contrast(1.05);
+  }
+  .loc-map-border {
+    padding: 1.5px;
+    background: linear-gradient(145deg,
+      color-mix(in oklab, var(--color-gold) 70%, transparent),
+      transparent 40%,
+      transparent 60%,
+      color-mix(in oklab, var(--color-gold) 45%, transparent));
+    -webkit-mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+            mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+  }
+</style>

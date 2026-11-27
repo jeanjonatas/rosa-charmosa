@@ -1,0 +1,182 @@
+---
+import type { Vestido } from '~/data/vestidos';
+import { CORES, OCASIOES } from '~/data/vestidos';
+import { asset } from '~/utils/asset';
+
+type Props = { vestido: Vestido; index?: number };
+const { vestido, index = 0 } = Astro.props;
+const cor = CORES[vestido.cor];
+---
+
+<a
+  href={asset(`/vestido/${vestido.id}`)}
+  class="vestido-card group relative block overflow-hidden rounded-xl bg-white/50"
+  style={{
+    '--tile-color': cor.hex,
+    '--stagger': `${(index % 12) * 60}ms`,
+  }}
+  data-reveal
+  data-cor={vestido.cor}
+  data-ocasioes={vestido.ocasioes.join(',')}
+  data-tamanhos={vestido.tamanhos.join(',')}
+  data-modelagem={vestido.modelagem}
+  data-codigo={vestido.codigo}
+  data-nome={vestido.nome.toLowerCase()}
+>
+  <div class="card-shadow absolute inset-0 rounded-xl"></div>
+  <div class="card-border pointer-events-none absolute inset-0 rounded-xl"></div>
+
+  <figure class="relative aspect-[3/4] overflow-hidden rounded-xl">
+    <span class="corner corner-tl" aria-hidden="true"></span>
+    <span class="corner corner-tr" aria-hidden="true"></span>
+    <span class="corner corner-bl" aria-hidden="true"></span>
+    <span class="corner corner-br" aria-hidden="true"></span>
+    <span class="halo absolute left-3 top-3 z-20 h-6 w-6 rounded-full ring-2 ring-white/70" style={{ background: cor.hex }} aria-hidden="true"></span>
+    {vestido.premium && (
+      <span class="premium-badge absolute right-3 top-3 z-20 rounded-full bg-ink/80 px-2 py-0.5 text-[0.65rem] font-medium uppercase tracking-[0.15em] text-gold backdrop-blur">
+        Premium
+      </span>
+    )}
+    <img
+      src={asset(vestido.imagens[0])}
+      alt={`Vestido ${cor.label} modelagem ${vestido.modelagem} — ${vestido.nome} — Rosa Charmosa Setor Campinas Goiânia`}
+      loading={index < 4 ? 'eager' : 'lazy'}
+      decoding="async"
+      width="600"
+      height="800"
+      class="card-img absolute inset-0 h-full w-full object-cover"
+      style={{ viewTransitionName: `v-${vestido.id}`, objectPosition: 'center 15%' }}
+    />
+    <div class="card-overlay absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent"></div>
+    <figcaption class="absolute inset-x-0 bottom-0 z-10 p-3.5 text-cream">
+      <p class="font-serif text-lg italic leading-tight drop-shadow-lg">{vestido.nome}</p>
+      <p class="mt-0.5 flex items-center gap-1.5 text-[0.7rem] uppercase tracking-[0.18em] text-cream/90 drop-shadow">
+        <span class="font-medium">{vestido.codigo}</span>
+        <span class="opacity-50">·</span>
+        <span>{vestido.ocasioes.map((o) => OCASIOES[o]).slice(0, 2).join(' · ')}</span>
+      </p>
+    </figcaption>
+  </figure>
+</a>
+
+<style>
+  .vestido-card {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+    transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.7s ease, box-shadow 0.4s ease;
+    transition-delay: var(--stagger, 0ms);
+    will-change: auto;
+    position: relative;
+    z-index: 1;
+  }
+  .vestido-card:hover {
+    z-index: 2;
+  }
+  .vestido-card.in-view {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .card-shadow {
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .card-border {
+    padding: 1px;
+    background: linear-gradient(145deg,
+      color-mix(in oklab, var(--color-gold) 35%, transparent),
+      color-mix(in oklab, var(--color-cream) 60%, transparent) 40%,
+      transparent 60%,
+      color-mix(in oklab, var(--color-rose-deep) 25%, transparent));
+    -webkit-mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+            mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0.5;
+    transition: opacity 0.4s ease;
+  }
+  .vestido-card:hover .card-border {
+    opacity: 1;
+  }
+
+  /* Photo frame corners — editorial detail, L-shaped brackets */
+  .corner {
+    position: absolute;
+    z-index: 15;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  .corner-tl { top: 8px; left: 8px; border-top: 1px solid rgb(255 255 255 / 0.85); border-left: 1px solid rgb(255 255 255 / 0.85); }
+  .corner-tr { top: 8px; right: 8px; border-top: 1px solid rgb(255 255 255 / 0.85); border-right: 1px solid rgb(255 255 255 / 0.85); }
+  .corner-bl { bottom: 8px; left: 8px; border-bottom: 1px solid rgb(255 255 255 / 0.85); border-left: 1px solid rgb(255 255 255 / 0.85); }
+  .corner-br { bottom: 8px; right: 8px; border-bottom: 1px solid rgb(255 255 255 / 0.85); border-right: 1px solid rgb(255 255 255 / 0.85); }
+  .vestido-card:hover .corner {
+    opacity: 1;
+  }
+  .vestido-card:hover .corner-tl,
+  .vestido-card:hover .corner-br {
+    transform: translate(-2px, -2px);
+  }
+  .vestido-card:hover .corner-tr {
+    transform: translate(2px, -2px);
+  }
+  .vestido-card:hover .corner-bl {
+    transform: translate(-2px, 2px);
+  }
+
+  .card-img {
+    transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1);
+    will-change: transform;
+  }
+
+  /* Hover magnético + halo expanding from color dot */
+  @media (hover: hover) {
+    .vestido-card:hover {
+      transform: translate3d(0, -3px, 0);
+    }
+    .vestido-card:hover .card-shadow {
+      box-shadow: var(--shadow-card-hover);
+    }
+    .vestido-card:hover .card-img {
+      transform: scale(1.04);
+    }
+    .vestido-card:hover .halo {
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--tile-color) 50%, transparent),
+                  0 0 0 8px color-mix(in oklab, var(--tile-color) 22%, transparent);
+    }
+    .vestido-card:hover .card-overlay {
+      background: linear-gradient(to top, color-mix(in oklab, var(--tile-color) 55%, var(--color-ink)) 0%, transparent 70%);
+    }
+  }
+
+  .halo {
+    transition: box-shadow 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+  }
+
+  .card-overlay {
+    transition: background 0.6s ease;
+  }
+
+  /* Filter hidden state (set via Solid island) */
+  .vestido-card[data-hidden='true'] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vestido-card,
+    .card-img,
+    .halo,
+    .card-overlay {
+      transition: none !important;
+    }
+    .vestido-card {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

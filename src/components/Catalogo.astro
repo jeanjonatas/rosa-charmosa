@@ -1,0 +1,159 @@
+---
+import { vestidos, CORES, OCASIOES, TAMANHOS } from '~/data/vestidos';
+import VestidoCard from './VestidoCard.astro';
+import Filtros from './Filtros';
+import Ornament from './Ornament.astro';
+
+const cores = Object.entries(CORES).map(([key, v]) => ({ key, label: v.label, hex: v.hex }));
+const ocasioesList = Object.entries(OCASIOES).map(([key, label]) => ({ key, label }));
+const tamanhosList = [...TAMANHOS];
+
+const usedCorKeys = new Set(vestidos.map((v) => v.cor));
+const filteredCores = cores.filter((c) => usedCorKeys.has(c.key as never));
+---
+
+<div class="section-divider my-2">
+  <Ornament variant="diamond" />
+</div>
+
+<section id="catalogo" class="section-catalogo relative mx-auto max-w-6xl scroll-mt-16 px-4 py-16 sm:px-6 sm:py-24">
+  <span class="section-numeral" aria-hidden="true">01</span>
+
+  <header class="relative mb-8 flex flex-col gap-2 sm:mb-10">
+    <p class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.3em] text-ink/55" data-reveal>
+      <span class="h-px w-6 bg-gold"></span>
+      Catálogo
+    </p>
+    <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+      <h2 class="font-serif text-4xl leading-[1.05] text-ink sm:text-5xl">
+        Encontre a <span class="italic text-burgundy">sua peça</span>
+      </h2>
+      <p class="max-w-md text-sm leading-relaxed text-ink/60">
+        Filtre por cor, ocasião e tamanho. Toque no vestido para ver mais fotos e agendar a prova no WhatsApp.
+      </p>
+    </div>
+  </header>
+
+  <div class="catalogo-filtros sticky top-14 z-20 -mx-4 bg-cream/80 px-4 py-4 backdrop-blur-md sm:top-12 sm:-mx-6 sm:px-6">
+    <Filtros client:load cores={filteredCores} ocasioes={ocasioesList} tamanhos={tamanhosList} />
+  </div>
+
+  <div
+    class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4"
+  >
+    {vestidos.map((v, i) => <VestidoCard vestido={v} index={i} />)}
+  </div>
+
+  <div data-catalogo-empty class="hidden flex-col items-center justify-center gap-3 py-16 text-center">
+    <div class="text-4xl">🌷</div>
+    <p class="font-serif text-xl text-ink">Nada encontrado com esse filtro</p>
+    <p class="max-w-sm text-sm text-ink/55">
+      Tente combinar outra cor com a ocasião, ou nos chame no WhatsApp — a gente pode ter algo similar chegando.
+    </p>
+  </div>
+</section>
+
+<style is:global>
+  .filter-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-ink) 55%, transparent);
+  }
+
+  .filtros-painel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  .filtros-painel[data-open='true'] {
+    grid-template-rows: 1fr;
+  }
+  .filtros-painel > div {
+    overflow: hidden;
+  }
+
+  .color-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 44px;
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, white 70%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-ink) 10%, transparent);
+    font-size: 0.82rem;
+    color: var(--color-ink);
+    transition: all 0.25s ease;
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+  }
+  .color-chip:hover {
+    border-color: color-mix(in oklab, var(--color-ink) 25%, transparent);
+  }
+  .color-chip .color-dot {
+    display: inline-block;
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1.5px color-mix(in oklab, white 55%, transparent),
+                0 1px 3px color-mix(in oklab, black 20%, transparent);
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  .color-chip:hover .color-dot {
+    transform: scale(1.1);
+  }
+  .color-chip[data-active='true'] {
+    background: color-mix(in oklab, var(--chip) 12%, white);
+    border-color: var(--chip);
+    padding-left: 0.4rem;
+  }
+  .color-chip[data-active='true']::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 999px;
+    padding: 1.5px;
+    background: conic-gradient(from var(--spin, 0deg), var(--color-gold), var(--color-rose), var(--color-gold));
+    mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+    -webkit-mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: spin-slow 6s linear infinite;
+    pointer-events: none;
+  }
+
+  .pill-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, white 70%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-ink) 10%, transparent);
+    font-size: 0.82rem;
+    color: var(--color-ink);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+  }
+  .pill-chip:hover {
+    border-color: color-mix(in oklab, var(--color-ink) 25%, transparent);
+  }
+  .pill-chip[data-active='true'] {
+    background: var(--color-ink);
+    color: var(--color-cream);
+    border-color: var(--color-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .color-chip[data-active='true']::before {
+      animation: none !important;
+    }
+    .filtros-painel {
+      transition: none !important;
+    }
+  }
+</style>

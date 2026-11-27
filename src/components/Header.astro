@@ -1,0 +1,87 @@
+---
+import { asset } from '~/utils/asset';
+---
+
+<header
+  data-site-header
+  class="fixed inset-x-0 top-0 z-40 transition-[height,box-shadow] duration-300 ease-out"
+>
+  <div class="site-header-bg absolute inset-0 pointer-events-none"></div>
+  <div class="relative mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6 sm:h-24 transition-[height] duration-300">
+    <a
+      href={asset('/')}
+      class="group inline-flex items-center"
+      aria-label="Rosa Charmosa — vestidos de festa"
+    >
+      <img
+        src={asset('/logo/rosa-charmosa-dark-560.webp')}
+        alt="Rosa Charmosa — vestidos de festa"
+        width="560"
+        height="314"
+        class="site-logo h-14 w-auto shrink-0 transition-[height] duration-300 sm:h-16"
+        fetchpriority="high"
+      />
+    </a>
+
+    <nav aria-label="Navegação principal" class="hidden items-center gap-8 sm:flex">
+      <a href={asset('/#catalogo')} class="header-link">Catálogo</a>
+      <a href={asset('/#como-funciona')} class="header-link">Como funciona</a>
+      <a href={asset('/#onde-estamos')} class="header-link">Onde estamos</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* Header is always on the marsala/burgundy band */
+  .site-header-bg {
+    background: var(--color-burgundy-deep);
+    background-image:
+      radial-gradient(60% 150% at 20% 100%, color-mix(in oklab, var(--color-rose) 18%, transparent), transparent 70%),
+      radial-gradient(60% 150% at 90% 100%, color-mix(in oklab, var(--color-gold) 12%, transparent), transparent 70%);
+    box-shadow: 0 1px 0 color-mix(in oklab, var(--color-gold) 25%, transparent),
+                0 10px 32px -16px rgb(0 0 0 / 0.35);
+    transition: box-shadow 0.3s ease;
+  }
+  header[data-site-header].is-scrolled .site-header-bg {
+    box-shadow: 0 1px 0 color-mix(in oklab, var(--color-gold) 40%, transparent),
+                0 14px 36px -12px rgb(0 0 0 / 0.5);
+  }
+  header[data-site-header].is-scrolled > div:last-child {
+    height: 4rem;
+  }
+  header[data-site-header].is-scrolled .site-logo {
+    height: 2.75rem;
+  }
+  @media (min-width: 640px) {
+    header[data-site-header].is-scrolled > div:last-child {
+      height: 4.5rem;
+    }
+    header[data-site-header].is-scrolled .site-logo {
+      height: 3rem;
+    }
+  }
+
+  .header-link {
+    position: relative;
+    font-size: 0.84rem;
+    letter-spacing: 0.02em;
+    color: color-mix(in oklab, var(--color-cream) 85%, transparent);
+    transition: color 0.2s ease;
+  }
+  .header-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 1px;
+    width: 0;
+    background: var(--color-gold-light);
+    transition: width 0.3s ease;
+  }
+  .header-link:hover {
+    color: var(--color-cream);
+  }
+  .header-link:hover::after {
+    width: 100%;
+  }
+</style>

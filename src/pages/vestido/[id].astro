@@ -1,0 +1,303 @@
+---
+import Base from '~/layouts/Base.astro';
+import Header from '~/components/Header.astro';
+import Footer from '~/components/Footer.astro';
+import BotoesFlutuantes from '~/components/BotoesFlutuantes.astro';
+import Galeria from '~/components/Galeria';
+import { vestidos, CORES, OCASIOES, MODELAGENS, whatsappLinkFor } from '~/data/vestidos';
+import { asset } from '~/utils/asset';
+
+export function getStaticPaths() {
+  return vestidos.map((v) => ({ params: { id: v.id }, props: { vestido: v } }));
+}
+
+const { vestido } = Astro.props;
+const cor = CORES[vestido.cor];
+const modelagem = MODELAGENS[vestido.modelagem];
+
+const relacionados = vestidos
+  .filter((v) => v.id !== vestido.id && (v.cor === vestido.cor || v.ocasioes.some((o) => vestido.ocasioes.includes(o))))
+  .slice(0, 3);
+
+const whatsappLink = whatsappLinkFor(vestido);
+const altBase = `Vestido ${cor.label} ${modelagem} ${vestido.nome} — Rosa Charmosa Setor Campinas Goiânia`;
+
+const title = `${vestido.nome} — ${cor.label} · ${modelagem} | Rosa Charmosa Goiânia`;
+const description = `${vestido.descricao} Aluguel em Goiânia (Setor Campinas) — agende sua prova pelo WhatsApp.`;
+
+const jsonLdProduct = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: `${vestido.nome} — ${cor.label}`,
+  description: vestido.descricao,
+  sku: vestido.codigo,
+  image: vestido.imagens.map((src) => `https://rosacharmosa.com.br${src}`),
+  color: cor.label,
+  category: 'Aluguel de Vestido de Festa',
+  brand: { '@type': 'Brand', name: 'Rosa Charmosa' },
+  offers: {
+    '@type': 'Offer',
+    availability: 'https://schema.org/InStock',
+    priceCurrency: 'BRL',
+    url: `https://rosacharmosa.com.br/vestido/${vestido.id}`,
+    seller: { '@type': 'ClothingStore', name: 'Rosa Charmosa' },
+  },
+};
+---
+
+<Base title={title} description={description} path={`/vestido/${vestido.id}`}>
+  <Header />
+  <main class="mx-auto max-w-6xl px-4 pb-32 pt-28 sm:px-6 sm:pt-36 sm:pb-20">
+    <nav class="mb-6 text-sm text-ink/55" aria-label="Breadcrumb">
+      <a href={asset('/')} class="hover:text-ink">Início</a>
+      <span class="mx-1.5 text-ink/30">/</span>
+      <a href={asset('/#catalogo')} class="hover:text-ink">Catálogo</a>
+      <span class="mx-1.5 text-ink/30">/</span>
+      <span class="text-ink/80">{vestido.nome}</span>
+    </nav>
+
+    <div class="grid gap-8 md:grid-cols-2 md:items-start md:gap-12 lg:gap-16">
+      <div class="galeria-wrap mx-auto w-full max-w-md md:max-w-none" style={{ viewTransitionName: `v-${vestido.id}` }}>
+        <Galeria client:load imagens={vestido.imagens.map(asset)} alt={altBase} />
+      </div>
+
+      <div class="flex flex-col md:sticky md:top-28">
+        <div class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/55">
+          <span class="color-swatch" style={{ background: cor.hex }} aria-hidden="true"></span>
+          <span>{cor.label}</span>
+          {vestido.premium && (
+            <>
+              <span class="opacity-40">·</span>
+              <span class="text-gold">Premium</span>
+            </>
+          )}
+        </div>
+
+        <h1 class="mt-3 font-serif text-4xl leading-tight text-ink sm:text-5xl">
+          {vestido.nome}
+        </h1>
+        <p class="mt-1 text-sm font-medium text-ink/55">{vestido.codigo}</p>
+
+        <p class="mt-6 text-base leading-relaxed text-ink/75">{vestido.descricao}</p>
+
+        <dl class="mt-8 grid grid-cols-2 gap-5 border-y border-ink/8 py-6 text-sm">
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-[0.15em] text-ink/50">Modelagem</dt>
+            <dd class="mt-1 text-ink">{modelagem}</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-[0.15em] text-ink/50">Tamanhos</dt>
+            <dd class="mt-1 flex flex-wrap gap-1.5">
+              {vestido.tamanhos.map((t) => (
+                <span class="rounded-full bg-cream px-2.5 py-0.5 text-[0.7rem] font-medium text-ink shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-ink)_10%,transparent)]">{t}</span>
+              ))}
+            </dd>
+          </div>
+          <div class="col-span-2">
+            <dt class="text-xs font-medium uppercase tracking-[0.15em] text-ink/50">Ocasiões</dt>
+            <dd class="mt-1 flex flex-wrap gap-1.5">
+              {vestido.ocasioes.map((o) => (
+                <span class="rounded-full border border-ink/10 px-2.5 py-0.5 text-[0.75rem] text-ink/75">{OCASIOES[o]}</span>
+              ))}
+            </dd>
+          </div>
+        </dl>
+
+        <a
+          href={whatsappLink}
+          target="_blank"
+          rel="noopener"
+          class="cta-agendar group relative mt-8 inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25D366] px-7 py-4 text-sm font-medium text-white shadow-[0_12px_32px_-8px_rgba(37,211,102,0.4)] transition-transform active:scale-[0.98] sm:text-base"
+        >
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.8-1.6-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3 4.8 4.2 1.8.8 2.5.9 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.3C8.3 21.5 10.1 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z"/>
+          </svg>
+          <span>Agendar prova deste vestido</span>
+          <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="cta-shine absolute inset-y-0 w-10 -skew-x-12 bg-white/30"></span>
+        </a>
+
+        <p class="mt-3 text-center text-xs text-ink/50">
+          Mensagem já vem preenchida com <span class="font-medium text-ink/70">{vestido.codigo}</span> · atendimento rápido no WhatsApp
+        </p>
+      </div>
+    </div>
+
+    {
+      relacionados.length > 0 && (
+        <aside class="mt-20">
+          <h2 class="font-serif text-2xl text-ink sm:text-3xl">
+            Peças <span class="italic text-rose">relacionadas</span>
+          </h2>
+          <ul class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5">
+            {relacionados.map((v) => {
+              const vc = CORES[v.cor];
+              return (
+                <li>
+                  <a href={asset(`/vestido/${v.id}`)} class="relacionado-card group block overflow-hidden rounded-xl bg-white/50">
+                    <figure class="relative aspect-[3/4] overflow-hidden">
+                      <span class="absolute left-3 top-3 z-10 h-5 w-5 rounded-full ring-2 ring-white/60" style={{ background: vc.hex }} aria-hidden="true"></span>
+                      <img src={asset(v.imagens[0])} alt={`${v.nome} — ${vc.label}`} loading="lazy" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"/>
+                      <div class="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent"></div>
+                      <figcaption class="absolute inset-x-0 bottom-0 p-3 text-cream">
+                        <p class="font-serif text-base italic leading-tight">{v.nome}</p>
+                        <p class="text-[0.65rem] uppercase tracking-[0.18em] text-cream/75">{v.codigo}</p>
+                      </figcaption>
+                    </figure>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </aside>
+      )
+    }
+  </main>
+
+  <aside class="sticky-cta safe-bottom" aria-label="Agendar prova">
+    <div class="sticky-cta-wrap">
+      <div class="sticky-cta-info">
+        <span class="sticky-cta-swatch" style={{ background: cor.hex }} aria-hidden="true"></span>
+        <div>
+          <p class="sticky-cta-name">{vestido.nome}</p>
+          <p class="sticky-cta-code">{vestido.codigo} · {cor.label}</p>
+        </div>
+      </div>
+      <a
+        href={whatsappLink}
+        target="_blank"
+        rel="noopener"
+        class="sticky-cta-btn group"
+      >
+        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.8-1.6-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.6-1.5-.9-2-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3 4.8 4.2 1.8.8 2.5.9 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.4zM12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.3C8.3 21.5 10.1 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2z"/>
+        </svg>
+        <span class="whitespace-nowrap">Agendar prova</span>
+      </a>
+    </div>
+  </aside>
+
+  <Footer />
+  <BotoesFlutuantes />
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLdProduct)} />
+
+  <style>
+    .color-swatch {
+      display: inline-block;
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1.2px color-mix(in oklab, white 60%, transparent);
+    }
+    .cta-agendar .cta-shine {
+      left: -50%;
+      animation: cta-shine 3.8s ease-in-out infinite;
+    }
+    @keyframes cta-shine {
+      0% { left: -50%; }
+      60% { left: 120%; }
+      100% { left: 120%; }
+    }
+    .cta-agendar:hover .cta-shine {
+      animation-duration: 1.6s;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cta-agendar .cta-shine { animation: none !important; display: none; }
+    }
+
+    /* Sticky CTA bar (mobile) */
+    .sticky-cta {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 45;
+      background: color-mix(in oklab, var(--color-cream) 85%, transparent);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-top: 1px solid color-mix(in oklab, var(--color-gold) 25%, transparent);
+      padding: 0.75rem 1rem;
+      padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+      transform: translate3d(0, 110%, 0);
+      animation: sticky-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) 0.4s forwards;
+    }
+    @keyframes sticky-in {
+      to { transform: translate3d(0, 0, 0); }
+    }
+    @media (min-width: 1024px) {
+      .sticky-cta { display: none; }
+    }
+    .sticky-cta-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      max-width: 72rem;
+      margin-inline: auto;
+      padding-right: 4rem;
+    }
+    .sticky-cta-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+      flex: 1;
+    }
+    .sticky-cta-swatch {
+      display: inline-block;
+      width: 0.95rem;
+      height: 0.95rem;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1.2px color-mix(in oklab, white 60%, transparent);
+      flex-shrink: 0;
+    }
+    .sticky-cta-name {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-style: italic;
+      line-height: 1.1;
+      color: var(--color-ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .sticky-cta-code {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: color-mix(in oklab, var(--color-ink) 50%, transparent);
+    }
+    .sticky-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.25rem;
+      min-height: 48px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 2px 6px -1px rgb(37 211 102 / 0.45),
+                  0 12px 24px -8px rgb(37 211 102 / 0.55),
+                  inset 0 1px 0 rgb(255 255 255 / 0.3);
+      transition: transform 0.15s ease, filter 0.2s ease;
+      flex-shrink: 0;
+    }
+    .sticky-cta-btn:active {
+      transform: scale(0.96);
+    }
+    .sticky-cta-btn:hover {
+      filter: brightness(1.08);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sticky-cta {
+        animation: none !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</Base>

@@ -1,0 +1,103 @@
+---
+import Ornament from './Ornament.astro';
+
+const depoimentos = [
+  {
+    nome: 'Amanda R.',
+    inicial: 'A',
+    ocasiao: 'Madrinha de casamento',
+    texto: 'Experiência incrível! A Rosa Charmosa me vestiu de um jeito que eu nem me reconheci — recebi elogios o dia inteiro. O atendimento é um carinho só.',
+    nota: 5,
+  },
+  {
+    nome: 'Beatriz S.',
+    inicial: 'B',
+    ocasiao: 'Formatura',
+    texto: 'Fiquei em dúvida entre três vestidos e as meninas me ajudaram com paciência infinita. O ajuste ficou perfeito, parecia feito pra mim.',
+    nota: 5,
+  },
+  {
+    nome: 'Carolina M.',
+    inicial: 'C',
+    ocasiao: 'Mãe dos noivos',
+    texto: 'Primeira vez alugando e amei. Preço justo, peças impecáveis e a tranquilidade de não precisar lavar depois. Já virei cliente.',
+    nota: 5,
+  },
+];
+---
+
+<div class="section-divider">
+  <Ornament variant="diamond" />
+</div>
+
+<section class="section-tone-rose relative isolate py-16 sm:py-24">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <span class="section-numeral" aria-hidden="true">03</span>
+
+    <header class="relative mb-12 flex flex-col gap-2">
+      <p class="editorial-eyebrow" data-reveal>Charmosas que já viveram isso</p>
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <h2 class="font-serif text-4xl leading-[1.05] text-ink sm:text-5xl" data-reveal>
+          Prova social de quem já <span class="italic text-burgundy">viveu o momento</span>
+        </h2>
+        <p class="text-xs text-ink/45 italic" data-reveal>Depoimentos ilustrativos · substituir pelos reais na v1</p>
+      </div>
+    </header>
+
+  <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      depoimentos.map((d, i) => (
+        <li class="depo-card" data-reveal style={{ '--delay': `${i * 120}ms` }}>
+          <article class="relative h-full rounded-2xl border border-ink/8 bg-white/50 p-6 transition-all duration-500 hover:border-gold/50 hover:shadow-[var(--shadow-card-hover)]">
+            <div class="flex items-center gap-3">
+              <span class="depo-avatar">{d.inicial}</span>
+              <div>
+                <p class="font-medium text-ink">{d.nome}</p>
+                <p class="text-xs text-ink/55">{d.ocasiao}</p>
+              </div>
+              <span class="ml-auto flex gap-0.5 text-gold" aria-label={`${d.nota} de 5`}>
+                {Array.from({ length: d.nota }).map(() => (
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2.5l2.9 6 6.6.6-5 4.5 1.5 6.4L12 16.8 5.9 20l1.5-6.4-5-4.5 6.6-.6L12 2.5z"/>
+                  </svg>
+                ))}
+              </span>
+            </div>
+            <p class="mt-4 text-sm leading-relaxed text-ink/75">
+              <span class="font-serif text-2xl leading-none text-rose/60 align-top">“</span>
+              {d.texto}
+              <span class="font-serif text-2xl leading-none text-rose/60">”</span>
+            </p>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+  </div>
+</section>
+
+<style>
+  .depo-card {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition: opacity 0.7s ease var(--delay), transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) var(--delay);
+  }
+  .depo-card.in-view {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  .depo-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--color-rose), var(--color-gold));
+    color: var(--color-cream);
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, white 55%, transparent);
+  }
+</style>

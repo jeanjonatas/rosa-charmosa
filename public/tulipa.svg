@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 320" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Pontinha superior -->
+  <path d="M 100 44 L 100 26 M 92 36 L 100 26 L 108 36" />
+  <!-- Bulbo principal -->
+  <path d="M 100 56 C 72 62 58 96 68 158 C 72 192 92 212 100 212 C 108 212 128 192 132 158 C 142 96 128 62 100 56 Z" />
+  <!-- Pétala central (dividindo a flor) -->
+  <path d="M 100 56 Q 96 108 92 160 Q 90 190 100 210" />
+  <path d="M 100 56 Q 104 108 108 160 Q 110 190 100 210" />
+  <!-- Caule -->
+  <path d="M 100 212 L 100 316" />
+  <!-- Folha esquerda -->
+  <path d="M 100 258 C 72 258 42 264 20 248 C 42 274 76 282 100 274" />
+  <!-- Folha direita -->
+  <path d="M 100 258 C 128 258 158 264 180 248 C 158 274 124 282 100 274" />
+</svg>
