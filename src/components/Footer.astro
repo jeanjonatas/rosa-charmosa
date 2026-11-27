@@ -34,6 +34,8 @@ import { asset } from '~/utils/asset';
           href={CONTATO.mapsUrl}
           target="_blank"
           rel="noopener"
+          data-track="maps"
+          data-track-source="footer"
           class="group mt-3 inline-flex items-center gap-1.5 text-sm text-gold transition-colors hover:text-rose"
         >
           Abrir rota no Google Maps
@@ -52,12 +54,12 @@ import { asset } from '~/utils/asset';
         <h4 class="mt-8 text-sm font-medium uppercase tracking-[0.18em] text-gold/90">Contato</h4>
         <ul class="mt-4 space-y-2 text-sm">
           <li>
-            <a href={whatsappLinkFor()} target="_blank" rel="noopener" class="text-cream hover:text-gold transition-colors">
+            <a href={whatsappLinkFor()} target="_blank" rel="noopener" data-track="whatsapp" data-track-source="footer" class="text-cream hover:text-gold transition-colors">
               WhatsApp {CONTATO.telefone}
             </a>
           </li>
           <li>
-            <a href={CONTATO.instagramUrl} target="_blank" rel="noopener" class="text-cream hover:text-gold transition-colors">
+            <a href={CONTATO.instagramUrl} target="_blank" rel="noopener" data-track="instagram" data-track-source="footer" class="text-cream hover:text-gold transition-colors">
               @{CONTATO.instagramHandle}
             </a>
           </li>

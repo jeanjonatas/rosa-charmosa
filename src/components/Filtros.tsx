@@ -1,4 +1,5 @@
-import { createSignal, createMemo, createEffect, For, Show, onMount } from 'solid-js';
+import { createSignal, createMemo, createEffect, For, Show, onMount, onCleanup } from 'solid-js';
+import { trackFilterSearch } from '~/utils/tracking';
 
 type CorInfo = { key: string; label: string; hex: string };
 type Props = {
@@ -41,6 +42,8 @@ export default function Filtros(props: Props) {
     setBusca('');
   };
 
+  let searchTrackTimer: ReturnType<typeof setTimeout> | undefined;
+
   const applyFilters = () => {
     if (typeof document === 'undefined') return;
     const cards = document.querySelectorAll<HTMLElement>('.vestido-card');
@@ -71,9 +74,26 @@ export default function Filtros(props: Props) {
     if (ocasiao()) params.set('ocasiao', ocasiao()!);
     if (tamanho()) params.set('tamanho', tamanho()!);
     if (q) params.set('q', q);
-    const url = params.toString() ? `?${params.toString()}#catalogo` : window.location.pathname + '#catalogo';
-    window.history.replaceState(null, '', url);
+    const hasFilters = Boolean(cor() || ocasiao() || tamanho() || q);
+    if (hasFilters) {
+      const url = `?${params.toString()}#catalogo`;
+      window.history.replaceState(null, '', url);
+      clearTimeout(searchTrackTimer);
+      searchTrackTimer = setTimeout(() => {
+        trackFilterSearch({
+          query: q,
+          cor: cor(),
+          ocasiao: ocasiao(),
+          tamanho: tamanho(),
+          resultsCount: visible,
+        });
+      }, 650);
+    } else if (window.location.search) {
+      window.history.replaceState(null, '', window.location.pathname + '#catalogo');
+    }
   };
+
+  onCleanup(() => clearTimeout(searchTrackTimer));
 
   createEffect(() => {
     cor();
